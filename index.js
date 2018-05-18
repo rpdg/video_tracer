@@ -72,37 +72,58 @@ function main() {
 	});
 
 	video.addEventListener('canplay', function () {
-		$(this).after(canvas);
+		video.parentNode.insertBefore(canvas, video.nextSibling);
 	});
 
+	fetch('json/demo.json', {
+		method: 'GET',
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json',
+		},
+	}).then(res => {
+		if (res.ok) {
+			if (res.status === 200) {
+				res.json().then(json => {
 
-	$.getJSON('json/demo.json', json => {
-		let rateW = 0;
-		let rateH = 0;
+					console.log(json);
 
-		const fps = parseInt(json.fps, 10);
-		//const frameArr = makeArr(parseFloat(json.duration, 10), fps, json.face);
-		const frameArr = json.face;
-		video.addEventListener('timeupdate', function () {
-			if (filterType !== -1) {
-				let currentFrame = parseInt(video.currentTime * fps, 10);
-				let currentObj = frameArr[currentFrame];
-				//console.log(currentFrame, currentObj);
-				if (currentObj) {
-					//console.log(currentObj);
-					draw(currentObj, rateW, rateH, filterType);
-				}
-				else {
-					clear();
-				}
+					let rateW = 0;
+					let rateH = 0;
+
+					const fps = parseInt(json.fps, 10);
+					//const frameArr = makeArr(parseFloat(json.duration, 10), fps, json.face);
+					const frameArr = json.face;
+					video.addEventListener('timeupdate', function () {
+						if (filterType !== -1) {
+							let currentFrame = parseInt(video.currentTime * fps, 10);
+							let currentObj = frameArr[currentFrame];
+							//console.log(currentFrame, currentObj);
+							if (currentObj) {
+								//console.log(currentObj);
+								draw(currentObj, rateW, rateH, filterType);
+							}
+							else {
+								clear();
+							}
+						}
+					}, false);
+
+					video.addEventListener("loadedmetadata", function (e) {
+						rateW = canvas.width / this.videoWidth;
+						rateH = canvas.height / this.videoHeight;
+					}, false);
+
+
+				});
+
+
 			}
-		}, false);
-
-		video.addEventListener("loadedmetadata", function (e) {
-			rateW = canvas.width / this.videoWidth;
-			rateH = canvas.height / this.videoHeight;
-		}, false);
+		}
+	}).catch((err) =>{
+		throw new Error(err.message);
 	});
+
 }
 
 
