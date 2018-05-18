@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>demo</title>
+	<link rel="stylesheet" href="./lib/player/plyr.css">
+	<style>
+		#playerContainer{
+			width: 854px;
+			height: 480px;
+			position: relative;
+			background-color: #000;
+		}
+		#video{
+			width: 854px;
+			height: 480px;
+		}
+
+		#canvas{
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 854px;
+			height: 480px;
+			z-index: 10;
+		}
+
+		.plyr--video .plyr__controls{
+			z-index: 100;
+		}
+	</style>
+</head>
+
+<body>
+
+<select title="" id="selFilter">
+	<option value="">--</option>
+	<option value="1">领导</option>
+	<option value="2">落马官员</option>
+	<option value="3">明星</option>
+	<option value="4">其他</option>
+</select>
+
+<div id="playerContainer">
+	<video id='video' controls preload='none' poster="https://media.w3.org/2010/05/sintel/poster.png" autoplay>
+		<source id='mp4' src="https://media.w3.org/2010/05/sintel/trailer.mp4" type='video/mp4'>
+		<source id='webm' src="https://media.w3.org/2010/05/sintel/trailer.webm" type='video/webm'>
+		<source id='ogv' src="https://media.w3.org/2010/05/sintel/trailer.ogv" type='video/ogg'>
+
+		<p>Your user agent does not support the HTML5 Video element.</p>
+	</video>
+
+</div>
+
+
+<script src="lib/jquery-3.3.1.js"></script>
+<script src="lib/player/plyr.js"></script>
+<script src="index.js"></script>
+</body>
+</html>

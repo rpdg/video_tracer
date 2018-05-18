@@ -1,0 +1,16 @@
+{
+	"name": "AMS",
+	"version": "1.0.0",
+	"description": "",
+	"main": "",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"clean&build:dev": "fis3 release dev -c -d ../dist",
+		"start": "fis3 server start --root ../dist",
+		"build:dev": "fis3 release dev -d ../dist",
+		"build:test": "fis3 release test -d ../dist",
+		"build:prd": "fis3 release prd -d ../dist"
+	},
+	"author": "",
+	"license": "MIT"
+}
