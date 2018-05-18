@@ -1,16 +1,16 @@
 const COLOR = 'red';
-const WIDTH = 854;
-const HEIGHT = 480;
+
+let canvasWidth = 854;
+let canvasHeight = 480;
+
+let rateW = 0;
+let rateH = 0;
+
 
 const canvas = document.createElement("canvas");
 canvas.id = 'canvas';
-canvas.width  = WIDTH;
-canvas.height = HEIGHT;
 const context = canvas.getContext('2d');
-context.lineWidth = 1;
-context.strokeStyle = COLOR;
-context.font = "14px Arial";
-context.fillStyle = COLOR;
+
 
 
 
@@ -28,9 +28,19 @@ function setFilterType() {
 selFilterType.addEventListener('change', setFilterType, false);
 
 
+function resetCanvas() {
+	canvas.width  = canvasWidth;
+	canvas.height = canvasHeight;
+	context.lineWidth = 1;
+	context.strokeStyle = COLOR;
+	context.font = "14px Arial";
+	context.fillStyle = COLOR;
+}
+resetCanvas();
+
 function draw(objArr, rateW, rateH, type) {
 	let ctx = context;
-	ctx.clearRect(0, 0, WIDTH, HEIGHT);
+	ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
 	let l = objArr.length;
 	while (l--) {
@@ -45,7 +55,7 @@ function draw(objArr, rateW, rateH, type) {
 }
 
 function clear() {
-	context.clearRect(0, 0,  WIDTH, HEIGHT);
+	context.clearRect(0, 0,  canvasWidth, canvasHeight);
 }
 
 function makeArr(duration, fps, faceHash) {
@@ -61,14 +71,43 @@ function makeArr(duration, fps, faceHash) {
 function main() {
 	const video = document.getElementById('video');
 
-	plyr.setup(video , {
+	const player = plyr.setup(video , {
 		iconUrl: './lib/player/plyr.svg',
 		displayDuration: true,
-		controls: ['play-large', 'play', 'progress', "current-time", "duration", "mute", "volume"],
+		controls: ['play-large', 'play', 'progress', "current-time", "duration", "mute", "volume" , "fullscreen"],
 		tooltips: {
 			controls: false,
 			seek: false
 		}
+	})[0] ;
+
+	function resetCanvasSize(w , h){
+		canvasWidth = w;
+		canvasHeight = h;
+		canvas.width  = canvasWidth;
+		canvas.height = canvasHeight;
+	}
+
+	function resetSizeRate(){
+		rateW = canvas.width / video.videoWidth;
+		rateH = canvas.height / video.videoHeight;
+	}
+
+
+	player.on('enterfullscreen' , function () {
+		let rectObject = video.getBoundingClientRect();
+		console.log('ef' , rectObject);
+		resetCanvasSize(rectObject.width , rectObject.height);
+		resetSizeRate();
+		resetCanvas();
+	});
+
+	player.on('exitfullscreen' , function () {
+		let rectObject = video.getBoundingClientRect();
+		console.log('xf' , rectObject);
+		resetCanvasSize(rectObject.width , rectObject.height);
+		resetSizeRate();
+		resetCanvas();
 	});
 
 	video.addEventListener('canplay', function () {
@@ -88,8 +127,6 @@ function main() {
 
 					console.log(json);
 
-					let rateW = 0;
-					let rateH = 0;
 
 					const fps = parseInt(json.fps, 10);
 					//const frameArr = makeArr(parseFloat(json.duration, 10), fps, json.face);
@@ -110,8 +147,7 @@ function main() {
 					}, false);
 
 					video.addEventListener("loadedmetadata", function (e) {
-						rateW = canvas.width / this.videoWidth;
-						rateH = canvas.height / this.videoHeight;
+						resetSizeRate();
 					}, false);
 
 
