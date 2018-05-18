@@ -1,6 +1,18 @@
-//const $container = $('#playerContainer');
-const video = document.getElementById('video');
-const canvas = $('<canvas id="canvas"></canvas>')[0];
+const COLOR = 'red';
+const WIDTH = 854;
+const HEIGHT = 480;
+
+const canvas = document.createElement("canvas");
+canvas.id = 'canvas';
+canvas.width  = WIDTH;
+canvas.height = HEIGHT;
+const context = canvas.getContext('2d');
+context.lineWidth = 1;
+context.strokeStyle = COLOR;
+context.font = "14px Arial";
+context.fillStyle = COLOR;
+
+
 
 let selFilterType = document.getElementById('selFilter');
 let filterType = 0;
@@ -8,7 +20,7 @@ let filterType = 0;
 function setFilterType() {
 	filterType = ~~selFilterType.options[selFilterType.selectedIndex].value;
 
-	if(filterType===-1){
+	if (filterType === -1) {
 		clear();
 	}
 }
@@ -17,11 +29,8 @@ selFilterType.addEventListener('change', setFilterType, false);
 
 
 function draw(objArr, rateW, rateH, type) {
-	const color = 'red';
-	let ctx = canvas.getContext('2d');
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.lineWidth = 1;
-	ctx.strokeStyle = color;
+	let ctx = context;
+	ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
 	let l = objArr.length;
 	while (l--) {
@@ -29,19 +38,14 @@ function draw(objArr, rateW, rateH, type) {
 		if ((type === 0) || (obj.type === type)) {
 			let pos = obj.axis.split(':');
 			//console.log(~~pos[2], ~~pos[0], ~~pos[3] - ~~pos[2], ~~pos[1] - ~~pos[0]);
-			ctx.strokeRect(~~(~~pos[2] * rateW), ~~(~~pos[0] * rateH), ~~((~~pos[3] - ~~pos[2]) * rateW), ~~((~~pos[1] - ~~pos[0]) * rateH));
-
-
-			ctx.font = "9px Arial";
-			ctx.fillStyle = color;
-			ctx.fillText(unescape(obj.name.replace(/\\u/g, '%u')), ~~(~~pos[2] * rateW), Math.max(0, ~~(~~pos[0] * rateH - 3)));
+			ctx.strokeRect(~~(~~pos[2] * rateW) + 0.5, ~~(~~pos[0] * rateH) + 0.5, ~~((~~pos[3] - ~~pos[2]) * rateW), ~~((~~pos[1] - ~~pos[0]) * rateH));
+			ctx.fillText(unescape(obj.name.replace(/\\u/g, '%u')), ~~(~~pos[2] * rateW) + 0.5, Math.max(0, ~~(~~pos[0] * rateH - 6) + 0.5));
 		}
 	}
 }
 
 function clear() {
-	let ctx = canvas.getContext('2d');
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	context.clearRect(0, 0,  WIDTH, HEIGHT);
 }
 
 function makeArr(duration, fps, faceHash) {
@@ -55,10 +59,12 @@ function makeArr(duration, fps, faceHash) {
 }
 
 function main() {
-	plyr.setup('#video', {
+	const video = document.getElementById('video');
+
+	plyr.setup(video , {
 		iconUrl: './lib/player/plyr.svg',
 		displayDuration: true,
-		controls: ['play-large', 'play', 'progress', "current-time", "duration", "mute", "volume"],//'fast-forward',
+		controls: ['play-large', 'play', 'progress', "current-time", "duration", "mute", "volume"],
 		tooltips: {
 			controls: false,
 			seek: false
