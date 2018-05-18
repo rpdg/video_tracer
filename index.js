@@ -8,22 +8,28 @@ let filterType = 0;
 function setFilterType() {
 	filterType = ~~selFilterType.options[selFilterType.selectedIndex].value;
 }
-selFilterType.addEventListener('change' , setFilterType , false);
+
+selFilterType.addEventListener('change', setFilterType, false);
 
 
-function draw(objArr, rateW, rateH , type) {
+function draw(objArr, rateW, rateH, type) {
+	const color = 'red';
 	let ctx = canvas.getContext('2d');
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.lineWidth = 1;
-	ctx.strokeStyle = 'red';
+	ctx.strokeStyle = color;
 
 	let l = objArr.length;
 	while (l--) {
 		let obj = objArr[l];
-		if(!type || (obj.type === type)){
+		if (obj.type === type) {
 			let pos = obj.axis.split(':');
 			//console.log(~~pos[2], ~~pos[0], ~~pos[3] - ~~pos[2], ~~pos[1] - ~~pos[0]);
-			ctx.strokeRect(~~pos[2] * rateW, ~~pos[0] * rateH, (~~pos[3] - ~~pos[2]) * rateW, (~~pos[1] - ~~pos[0]) * rateH);
+			ctx.strokeRect(~~(~~pos[2] * rateW), ~~(~~pos[0] * rateH), ~~((~~pos[3] - ~~pos[2]) * rateW), ~~((~~pos[1] - ~~pos[0]) * rateH));
+
+			ctx.font = "9px Arial";
+			ctx.fillStyle = color;
+			ctx.fillText(unescape(obj.name.replace(/\\u/g, '%u')), ~~(~~pos[2] * rateW), Math.max(0, ~~(~~pos[0] * rateH - 3)));
 		}
 	}
 }
@@ -44,7 +50,7 @@ function makeArr(duration, fps, faceHash) {
 }
 
 function main() {
-	let player = plyr.setup('#video', {
+	plyr.setup('#video', {
 		iconUrl: './lib/player/plyr.svg',
 		displayDuration: true,
 		controls: ['play-large', 'play', 'progress', "current-time", "duration", "mute", "volume"],//'fast-forward',
@@ -52,7 +58,7 @@ function main() {
 			controls: false,
 			seek: false
 		}
-	})[0];
+	});
 
 	video.addEventListener('canplay', function () {
 		$(this).after(canvas);
@@ -66,13 +72,14 @@ function main() {
 		const fps = parseInt(json.fps, 10);
 		//const frameArr = makeArr(parseFloat(json.duration, 10), fps, json.face);
 		const frameArr = json.face;
+
 		video.addEventListener('timeupdate', function () {
 			let currentFrame = parseInt(video.currentTime * fps, 10);
 			let currentObj = frameArr[currentFrame];
 			//console.log(currentFrame, currentObj);
 			if (currentObj) {
 				//console.log(currentObj);
-				draw(currentObj, rateW, rateH , filterType);
+				draw(currentObj, rateW, rateH, filterType);
 			}
 			else {
 				clear();
